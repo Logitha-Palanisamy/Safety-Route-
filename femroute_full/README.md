@@ -140,6 +140,8 @@ The bot handles:
 - ✅ Floating chatbot bubble
 
 ---
+<img width="1600" height="721" alt="image" src="https://github.com/user-attachments/assets/11c5e667-7c41-459f-8368-93e0d704fddc" />
+
 
 ## 📱 Mobile Usage
 
