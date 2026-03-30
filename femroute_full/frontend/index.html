@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FemRoute — Safe Navigation AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══ SPLASH ═══ -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-logo">♀</div>
+    <div class="splash-name">FemRoute</div>
+    <div class="splash-tag">Context-Aware Safe Navigation AI</div>
+    <div class="splash-bar"><div class="splash-fill"></div></div>
+  </div>
+</div>
+
+<!-- ═══ SOS OVERLAY ═══ -->
+<div class="overlay" id="sos-overlay">
+  <div class="sos-modal">
+    <div class="sos-pulse-ring"></div>
+    <div class="sos-icon">🚨</div>
+    <div class="sos-sending">
+      <span class="dot-anim"><span></span><span></span><span></span></span>
+      Alerting emergency contacts
+    </div>
+    <h2>SOS Sent</h2>
+    <p>Your location has been shared with emergency contacts & local authorities. Move to a well-lit crowded area immediately.</p>
+    <div class="sos-numbers">
+      <a href="tel:112" class="sos-num-btn">📞 112 Police</a>
+      <a href="tel:1091" class="sos-num-btn">♀ 1091 Helpline</a>
+      <a href="tel:102" class="sos-num-btn">🚑 102 Ambulance</a>
+    </div>
+    <button class="sos-close-btn" onclick="closeSOS()">I'm Safe — Dismiss</button>
+  </div>
+</div>
+
+<!-- ═══ NEARBY PANEL ═══ -->
+<div class="overlay" id="nearby-overlay">
+  <div class="nearby-panel">
+    <div class="nearby-header">
+      <span>📍 Nearby Services</span>
+      <button onclick="closeNearby()">✕</button>
+    </div>
+    <div class="nearby-cats">
+      <button class="ncat active" data-cat="police" onclick="setNearbycat(this,'police')">👮 Police</button>
+      <button class="ncat" data-cat="hospital" onclick="setNearbycat(this,'hospital')">🏥 Hospital</button>
+      <button class="ncat" data-cat="ngo" onclick="setNearbycat(this,'ngo')">🤝 NGO</button>
+      <button class="ncat" data-cat="bus" onclick="setNearbycat(this,'bus')">🚌 Bus Stop</button>
+      <button class="ncat" data-cat="auto" onclick="setNearbycat(this,'auto')">🛺 Auto Stand</button>
+      <button class="ncat" data-cat="pharmacy" onclick="setNearbycat(this,'pharmacy')">💊 Pharmacy</button>
+    </div>
+    <div id="nearby-list" class="nearby-list"></div>
+  </div>
+</div>
+
+<!-- ═══ RIDE PANEL ═══ -->
+<div class="overlay" id="ride-overlay">
+  <div class="ride-panel">
+    <div class="nearby-header">
+      <span>🚗 Book a Ride</span>
+      <button onclick="closeRide()">✕</button>
+    </div>
+    <div id="ride-dest-info" class="ride-dest-info"></div>
+    <div class="ride-apps">
+      <button class="ride-app-btn ola" onclick="openRideApp('ola')">
+        <span class="ride-logo">🟡</span>
+        <div>
+          <div class="ride-name">Ola Cabs</div>
+          <div class="ride-sub">Safe rides, share trip</div>
+        </div>
+        <span class="ride-arrow">→</span>
+      </button>
+      <button class="ride-app-btn uber" onclick="openRideApp('uber')">
+        <span class="ride-logo">⚫</span>
+        <div>
+          <div class="ride-name">Uber</div>
+          <div class="ride-sub">Track & share ride</div>
+        </div>
+        <span class="ride-arrow">→</span>
+      </button>
+      <button class="ride-app-btn rapido" onclick="openRideApp('rapido')">
+        <span class="ride-logo">🟠</span>
+        <div>
+          <div class="ride-name">Rapido</div>
+          <div class="ride-sub">Bike & auto rides</div>
+        </div>
+        <span class="ride-arrow">→</span>
+      </button>
+      <button class="ride-app-btn gmaps" onclick="openRideApp('gmaps')">
+        <span class="ride-logo">🗺️</span>
+        <div>
+          <div class="ride-name">Google Maps</div>
+          <div class="ride-sub">Navigate yourself</div>
+        </div>
+        <span class="ride-arrow">→</span>
+      </button>
+    </div>
+    <div class="safety-reminder">
+      <div class="sr-title">🛡️ Before you ride</div>
+      <div class="sr-item">✓ Share trip details with a trusted contact</div>
+      <div class="sr-item">✓ Note the vehicle number plate</div>
+      <div class="sr-item">✓ Sit behind the driver — not the front seat</div>
+      <div class="sr-item">✓ Keep FemRoute SOS ready</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HEADER ═══ -->
+<header id="app-header">
+  <div class="hdr-left">
+    <div class="hdr-logo">♀</div>
+    <div>
+      <div class="hdr-title">FemRoute</div>
+      <div class="hdr-sub">Safe Navigation AI</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="time-chip" id="live-time-chip">
+      <span class="time-dot"></span>
+      <span id="live-time">07:01</span>
+    </div>
+    <button class="sos-hdr-btn" onclick="triggerSOS()">🆘 SOS</button>
+  </div>
+</header>
+
+<!-- ═══ MAIN APP ═══ -->
+<div class="app-wrap" id="app-wrap">
+
+  <!-- LEFT / TOP: Controls -->
+  <div class="control-panel" id="control-panel">
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="qa-btn" onclick="showNearby()">📍<span>Nearby</span></button>
+      <button class="qa-btn" onclick="showRide()">🚗<span>Book Ride</span></button>
+      <button class="qa-btn" onclick="triggerSOS()">🆘<span>SOS</span></button>
+      <button class="qa-btn" onclick="getUserLocation()">🎯<span>My Location</span></button>
+    </div>
+
+    <!-- ORS Key -->
+    <div class="card" id="ors-card">
+      <div class="card-title">🔑 Route API Key <span class="ors-badge" id="ors-badge">NOT SET</span></div>
+      <div class="api-row">
+        <input class="api-input" id="ors-key" type="password" placeholder="Paste OpenRouteService key…">
+        <button class="api-save" onclick="saveKey()">Save</button>
+      </div>
+      <div class="api-hint">Free key → <b>openrouteservice.org</b> · 2000 req/day</div>
+    </div>
+
+    <!-- Route Input -->
+    <div class="card">
+      <div class="card-title">📍 Route Input</div>
+      <div class="input-group">
+        <label>From</label>
+        <div class="input-wrap">
+          <span class="inp-icon">🟢</span>
+          <input class="route-input" id="origin" type="text" placeholder="Starting point…" value="Chennai Central Station">
+          <button class="locate-btn" onclick="fillMyLocation('origin')" title="Use my location">🎯</button>
+        </div>
+      </div>
+      <div class="route-dot-line">
+        <span>⋮</span>
+        <button class="swap-btn" onclick="swapLocations()" title="Swap">⇅</button>
+      </div>
+      <div class="input-group">
+        <label>To</label>
+        <div class="input-wrap">
+          <span class="inp-icon">🔴</span>
+          <input class="route-input" id="destination" type="text" placeholder="Destination…" value="T Nagar, Chennai">
+        </div>
+      </div>
+    </div>
+
+    <!-- Modes -->
+    <div class="card">
+      <div class="card-title">⚙️ Safety Mode</div>
+      <div class="modes-grid">
+        <button class="mode-btn active" data-mode="women" onclick="setMode(this)">
+          <span>♀</span><span>Women Safety</span>
+        </button>
+        <button class="mode-btn" data-mode="night" onclick="setMode(this)">
+          <span>🌙</span><span>Night Travel</span>
+        </button>
+        <button class="mode-btn" data-mode="walking" onclick="setMode(this)">
+          <span>🚶</span><span>Walking</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Analyse Button -->
+    <button class="analyse-btn" id="analyse-btn" onclick="analyseRoutes()">
+      <span>✦</span> Analyse Safe Routes
+    </button>
+
+    <!-- Results -->
+    <div id="results" class="results-area"></div>
+
+  </div>
+
+  <!-- RIGHT: Map -->
+  <div class="map-wrap">
+    <div id="map"></div>
+
+    <!-- Map overlays -->
+    <div class="map-overlays">
+      <div class="map-legend" id="map-legend" style="display:none">
+        <div class="leg-item"><span class="leg-dot" style="background:#00c897"></span>Safe</div>
+        <div class="leg-item"><span class="leg-dot" style="background:#ffb703"></span>Moderate</div>
+        <div class="leg-item"><span class="leg-dot" style="background:#ff4757"></span>High Risk</div>
+      </div>
+      <div class="route-info-card" id="route-info-card" style="display:none">
+        <div class="ric-title">🗺️ Route Data</div>
+        <div class="ric-row"><span>Distance</span><b id="ric-dist">—</b></div>
+        <div class="ric-row"><span>Time</span><b id="ric-time">—</b></div>
+        <div class="ric-row"><span>Safety</span><b id="ric-safety" style="color:#00c897">—</b></div>
+      </div>
+    </div>
+
+    <!-- Mobile map toggle -->
+    <button class="map-toggle-btn" id="map-toggle" onclick="toggleMapMobile()">🗺️ Map</button>
+  </div>
+</div>
+
+<!-- ═══ LOADER ═══ -->
+<div class="loader-overlay" id="loader">
+  <div class="loader-box">
+    <div class="loader-ring"></div>
+    <div class="loader-label">AI Safety Analysis</div>
+    <div class="loader-step" id="loader-step">Initialising…</div>
+  </div>
+</div>
+
+<!-- ═══ CHATBOT ═══ -->
+<div class="bot-fab" id="bot-fab" onclick="toggleBot()">
+  <span id="bot-fab-icon">♀</span>
+  <div class="bot-fab-badge" id="bot-badge">1</div>
+</div>
+
+<div class="bot-window" id="bot-window">
+  <div class="bot-hdr">
+    <div class="bot-hdr-left">
+      <div class="bot-avatar">♀</div>
+      <div>
+        <div class="bot-hdr-name">Sakhi — Safety AI</div>
+        <div class="bot-hdr-status">● Online 24/7</div>
+      </div>
+    </div>
+    <button class="bot-hdr-close" onclick="toggleBot()">✕</button>
+  </div>
+  <div class="bot-msgs" id="bot-msgs"></div>
+  <div class="bot-quick-wrap" id="bot-quick-wrap"></div>
+  <div class="bot-input-row">
+    <input class="bot-inp" id="bot-inp" placeholder="Ask Sakhi anything…" onkeydown="if(event.key==='Enter')sendMsg()">
+    <button class="bot-send" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="app.js"></script>
+<script src="bot.js"></script>
+</body>
+</html>
