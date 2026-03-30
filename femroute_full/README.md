@@ -140,7 +140,6 @@ The bot handles:
 - ✅ Floating chatbot bubble
 
 ---
-<img width="1600" height="721" alt="image" src="https://github.com/user-attachments/assets/11c5e667-7c41-459f-8368-93e0d704fddc" />
 
 
 ## 📱 Mobile Usage
@@ -169,3 +168,16 @@ Tap **📋 Controls** to go back.
 N · V · D · L · DH
 
 *Every woman deserves to travel safely.* ♀
+Images :<img width="1600" height="872" alt="image" src="https://github.com/user-attachments/assets/7c4a730b-313f-41b8-938a-8965453bdf34" />
+        <img width="401" height="445" alt="image" src="https://github.com/user-attachments/assets/5a8cf1da-b9ca-4ad2-b84e-fc91cb907c4b" />
+        <img width="824" height="438" alt="image" src="https://github.com/user-attachments/assets/c3925c04-1f50-4302-b07f-45eb289b1d8f" />
+        <img width="804" height="629" alt="image" src="https://github.com/user-attachments/assets/685d96d3-d8f9-400d-ba57-f32a3a35abf4" />
+        <img width="673" height="640" alt="image" src="https://github.com/user-attachments/assets/40a69f16-12ec-4c44-aff8-e4289e4cb82d" />
+        <img width="414" height="729" alt="image" src="https://github.com/user-attachments/assets/ec818c75-e6d9-43b2-982e-58ebb3e75753" />
+        <img width="1600" height="721" alt="image" src="https://github.com/user-attachments/assets/9457e38b-a648-42d3-b2e0-01b58a7c335e" />
+
+
+
+
+
+
